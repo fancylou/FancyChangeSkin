@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+
+    <color name="fancy_skin_colorPrimary">#3F51B5</color>
+    <color name="fancy_skin_textColor">#e0e2e9</color>
+    <color name="fancy_skin_item_bg">#d2997c</color>
+
+    <color name="fancy_skin_colorPrimary_red">#f50029</color>
+    <color name="fancy_skin_textColor_red">#1c1c1d</color>
+    <color name="colorPrimaryDark_red">#8e0106</color>
+    <color name="fancy_skin_item_bg_red">#fa324a</color>
+</resources>
