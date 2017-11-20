@@ -2,22 +2,20 @@ package net.muliba.changeskin.data
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import net.muliba.changeskin.FancySkin
 
 /**
  * Created by fancylou on 10/25/17.
  */
 
 
-data class SkinAttr(val attrType: SkinAttrType, val resName: String) {
+data class SkinAttr(val attrType: SkinAttrType,val originResId: Int, val resName: String) {
     fun apply(view: View) {
-        attrType.apply(view, resName)
+        attrType.apply(view, originResId, resName)
     }
 }
 
-fun getSkinAttrs(attrs: AttributeSet?, context: Context) : List<SkinAttr> {
+fun getSkinAttrs(attrs: AttributeSet?, context: Context?) : List<SkinAttr> {
     val skinAttrs = ArrayList<SkinAttr>()
     if (attrs == null) {
         return skinAttrs
@@ -26,13 +24,17 @@ fun getSkinAttrs(attrs: AttributeSet?, context: Context) : List<SkinAttr> {
         val attrName = attrs.getAttributeName(index)
         val attrValue = attrs.getAttributeValue(index)
         val skinType: SkinAttrType = getSupportAttrType(attrName) ?: continue
-
         if (attrValue.startsWith("@")) {
-            val id = attrValue.substring(1).toInt()
-            val entryName = context.resources.getResourceEntryName(id)
-            if (entryName.startsWith(FancySkin.SKIN_PREFFIX)) {
-                skinAttrs.add(SkinAttr(skinType, entryName))
-            }
+            try {
+                val id = attrValue.substring(1).toInt()
+                if (id == 0) {
+                    continue
+                }
+                val entryName = context?.resources?.getResourceEntryName(id)
+                if (entryName!=null) {
+                    skinAttrs.add(SkinAttr(skinType, id, entryName))
+                }
+            }catch (e: Exception){}
         }
     }
     return skinAttrs
@@ -40,7 +42,7 @@ fun getSkinAttrs(attrs: AttributeSet?, context: Context) : List<SkinAttr> {
 
 fun getSupportAttrType(attrName: String): SkinAttrType? {
     SkinAttrType.values().filter { type ->
-        type.attrType.equals(attrName)
+        type.attrType == attrName
     }.map { return it }
     return null
 }

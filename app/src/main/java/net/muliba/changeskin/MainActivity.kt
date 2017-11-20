@@ -49,7 +49,7 @@ class MainActivity : FancySkinActivity() {
                 FancySkinManager.instance().changeSkinInner("red")
             }
             R.id.menu_clear -> {
-                FancySkinManager.instance().cleanSkin()
+                FancySkinManager.instance().resetDefaultSkin()
             }
             R.id.menu_out -> {
                 val filePath = Environment.getExternalStorageDirectory().absolutePath + File.separator + "app-release.apk"

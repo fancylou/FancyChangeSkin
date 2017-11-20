@@ -1,5 +1,6 @@
 package net.muliba.changeskin.data
 
+import android.support.v4.view.ViewCompat
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -13,19 +14,19 @@ import net.muliba.changeskin.ResourceManager
 enum class SkinAttrType(val attrType: String) {
 
     BACKGROUND("background") {
-        override fun apply(view: View, resName: String) {
-            val drawable = getResourceManager()?.getDrawable(resName)
+        override fun apply(view: View, originResId: Int, resName: String) {
+            val drawable = getResourceManager()?.getDrawable(originResId, resName)
             if (drawable!=null) {
-                view.background = drawable
+                ViewCompat.setBackground(view, drawable)
             }
         }
 
     }
     ,
     COLOR("textColor") {
-        override fun apply(view: View, resName: String) {
+        override fun apply(view: View, originResId: Int, resName: String) {
             getResourceManager()?.let { manager->
-                val color = manager.getColor(resName)
+                val color = manager.getColor(originResId, resName)
                 if (color != -1) {
                     (view as TextView).setTextColor(color)
                 }
@@ -34,9 +35,9 @@ enum class SkinAttrType(val attrType: String) {
         }
     },
     SRC("src") {
-        override fun apply(view: View, resName: String) {
+        override fun apply(view: View, originResId: Int, resName: String) {
             getResourceManager()?.let { manager ->
-                val drawable = manager.getDrawable(resName)
+                val drawable = manager.getDrawable(originResId, resName)
                 if(drawable!=null) {
                     (view as ImageView).setImageDrawable(drawable)
                 }
@@ -45,7 +46,7 @@ enum class SkinAttrType(val attrType: String) {
         }
     };
 
-    abstract fun apply(view: View, resName: String)
+    abstract fun apply(view: View, originResId: Int, resName: String)
 
     fun  getResourceManager(): ResourceManager?  = FancySkinManager.instance().getResourceManager()
 }
