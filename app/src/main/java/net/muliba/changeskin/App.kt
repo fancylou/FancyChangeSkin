@@ -10,6 +10,6 @@ import android.app.Application
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        FancySkinManager.instance().init(this)
+        FancySkinManager.instance().withoutActivity(this)
     }
 }

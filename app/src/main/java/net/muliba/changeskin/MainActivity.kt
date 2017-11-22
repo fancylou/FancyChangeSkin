@@ -2,6 +2,7 @@ package net.muliba.changeskin
 
 import android.os.Bundle
 import android.os.Environment
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
@@ -10,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import net.muliba.changeskin.callback.PluginSkinChangingListener
 import java.io.File
 
-class MainActivity : FancySkinActivity() {
+class MainActivity : AppCompatActivity() {
 
     val mDatas = arrayOf("Activity", "Service", "Activity", "Service", "Activity",
             "Activity", "Service", "Activity", "Service", "Activity",

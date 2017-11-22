@@ -20,41 +20,35 @@ import java.lang.reflect.Constructor
  */
 
 
-class FancySkinLayoutInflaterFactory(appCompatActivity: AppCompatActivity) : LayoutInflaterFactory {
+class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInflaterFactory {
 
 
-    private val mAppCompatActivity: AppCompatActivity = appCompatActivity
     private val skinViewsMap = HashMap<View, SkinView>()
 
 
     override fun onCreateView(parent: View?, name: String, context: Context?, attrs: AttributeSet?): View? {
-        var f = false
-        if (name == "net.zoneland.framework.ui.view.CircleTextView") {
-            f = true
-        }
+
         var view: View? = null
-        val skinAttrList = filterSkinAttr(attrs, context, f)
+        val skinAttrList = filterSkinAttr(attrs, context)
         if (skinAttrList.isEmpty()) {
-            if (f) Log.i("oncreateView", "skin attr is null")
             return null
         }
 
         if (context == null || attrs == null) {
-            if (f) Log.i("oncreateView", "context or attr is null")
             return null
         }
-        view = mAppCompatActivity.delegate.createView(parent, name, context, attrs)
+        if (mContext is AppCompatActivity) {
+            view = mContext.delegate.createView(parent, name, context, attrs)
+        }
         if (view == null) {
-            if (f) Log.i("oncreateView", "appCompat create view  is null")
             view = createViewFromTag(context, name, attrs)
         }
         if (view != null) {
             val skinView = SkinView(view!!, skinAttrList)
             skinViewsMap.put(view!!, skinView)
-            if (f) Log.i("oncreateView", "put the view into the map")
             skinView.apply()
         }
-        if (view == null && f) {
+        if (view == null) {
             Log.i("oncreateView", "create view is null")
         }
         return view
@@ -131,14 +125,12 @@ class FancySkinLayoutInflaterFactory(appCompatActivity: AppCompatActivity) : Lay
 
     }
 
-    private fun filterSkinAttr(attrs: AttributeSet?, context: Context?, f:Boolean) : List<BaseSkinAttr> {
-        if (f) Log.i("skin", "filterSkinAttr .....................")
+    private fun filterSkinAttr(attrs: AttributeSet?, context: Context?) : List<BaseSkinAttr> {
         if (attrs==null) return emptyList()
         val skinAttrArray = ArrayList<BaseSkinAttr>()
         for (index in 0 until attrs.attributeCount) {
             val attrName = attrs.getAttributeName(index)
             val attrValue = attrs.getAttributeValue(index)
-            if (f) Log.i("skin", "filterSkinAttr ................attrName:$attrName")
             if (!FancySkinManager.instance().isSupportAttrType(attrName)) continue
             if (attrValue.startsWith("@")) {
                 try {
@@ -147,11 +139,9 @@ class FancySkinLayoutInflaterFactory(appCompatActivity: AppCompatActivity) : Lay
                         continue
                     }
                     val entryName = context?.resources?.getResourceEntryName(id)
-                    if (f) Log.i("skin", "filterSkinAttr ................entryName:$entryName")
                     if (entryName!=null) {
                         val skinAttr = FancySkinManager.instance().createSupportAttr(attrName, id, entryName)
                         if (skinAttr!=null) {
-                            if (f) Log.i("skin", "filterSkinAttr ................skinAttr:$skinAttr")
                             skinAttrArray.add(skinAttr)
                         }
                     }

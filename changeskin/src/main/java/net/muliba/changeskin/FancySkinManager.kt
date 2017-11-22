@@ -1,11 +1,12 @@
 package net.muliba.changeskin
 
+import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.res.AssetManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
-import android.support.v4.widget.ExploreByTouchHelper.INVALID_ID
 import android.text.TextUtils
 import net.muliba.changeskin.callback.DefaultPluginSkinChangingListener
 import net.muliba.changeskin.callback.PluginSkinChangingListener
@@ -36,11 +37,11 @@ class FancySkinManager private constructor() {
         }
     }
 
-    private var mContext: Context? = null
+    private lateinit var mContext: Context
     private var mResources: Resources? = null
     private var mResourceManager: ResourceManager? = null
     private var usePlugin: Boolean = false
-    private val mSkinChangedListeners = ArrayList<SkinChangedListener>()
+    private val mSkinChangedMaps = HashMap<Activity, SkinChangedListener>()
     private var needChangeStatusBarColor = true
     private val mSupportSkinAttrs = HashMap<String, BaseSkinAttr>()
     /**
@@ -50,6 +51,12 @@ class FancySkinManager private constructor() {
     private var mCurrentSkinPath = ""
     private var mCurrentSkinSuffix = ""
 
+
+    fun withoutActivity(application: Application): FancySkinManager {
+        init(application)
+        FancySkinActivityLifeCycle.instance(application)
+        return instance()
+    }
 
     /**
      * 必须在Application onCreate 中初始化
@@ -65,13 +72,13 @@ class FancySkinManager private constructor() {
 
 
         //如果有SkinPlugin 要初始化
-        val prefSkinPath = PreferenceUtil.getPluginPath(mContext!!)
-        val prefSkinPackageName = PreferenceUtil.getPluginPackName(mContext!!)
-        mCurrentSkinSuffix = PreferenceUtil.getPluginSuffix(mContext!!)
+        val prefSkinPath = PreferenceUtil.getPluginPath(mContext)
+        val prefSkinPackageName = PreferenceUtil.getPluginPackName(mContext)
+        mCurrentSkinSuffix = PreferenceUtil.getPluginSuffix(mContext)
 
 
         //默认本地资源
-        mResourceManager = ResourceManager(mContext!!, mContext?.resources!!, mContext?.packageName!!, mCurrentSkinSuffix)
+        mResourceManager = ResourceManager(mContext, mContext.resources!!, mContext.packageName!!, mCurrentSkinSuffix)
 
         if (TextUtils.isEmpty(prefSkinPath)) {
             return instance()
@@ -85,7 +92,7 @@ class FancySkinManager private constructor() {
             mCurrentSkinPath = prefSkinPath
             mCurrentSkinPackageName = prefSkinPackageName
         } catch (e: Exception) {
-            PreferenceUtil.clearPluginSkin(mContext!!)
+            PreferenceUtil.clearPluginSkin(mContext)
         }
         return instance()
     }
@@ -126,8 +133,8 @@ class FancySkinManager private constructor() {
         //清理当前的插件皮肤
         cleanPluginSkin()
         mCurrentSkinSuffix = suffix
-        PreferenceUtil.putPluginSuffix(mContext!!, suffix)
-        mResourceManager = ResourceManager(mContext!!, mContext?.resources!!, mContext?.packageName!!, mCurrentSkinSuffix)
+        PreferenceUtil.putPluginSuffix(mContext, suffix)
+        mResourceManager = ResourceManager(mContext, mContext.resources!!, mContext.packageName!!, mCurrentSkinSuffix)
         notifySkinChanged()
     }
 
@@ -167,7 +174,7 @@ class FancySkinManager private constructor() {
 
     fun resetDefaultSkin() {
         cleanPluginSkin()
-        mResourceManager = ResourceManager(mContext!!, mContext?.resources!!, mContext?.packageName!!, mCurrentSkinSuffix)
+        mResourceManager = ResourceManager(mContext, mContext.resources!!, mContext.packageName!!, mCurrentSkinSuffix)
         notifySkinChanged()
     }
 
@@ -204,22 +211,20 @@ class FancySkinManager private constructor() {
         }
     }
 
-    fun addSkinChangedListener(listener: SkinChangedListener) {
-        mSkinChangedListeners.add(listener)
+    fun addSkinChangedListener(activity: Activity, listener: SkinChangedListener) {
+        mSkinChangedMaps.put(activity, listener)
     }
 
-    fun removeSkinChangedListener(listener: SkinChangedListener) {
-        mSkinChangedListeners.remove(listener)
+    fun removeSkinChangedListener(activity: Activity) {
+        mSkinChangedMaps.remove(activity)
     }
 
-    fun getResourceManager(): ResourceManager? {
-        return mResourceManager
-    }
+    fun getResourceManager(): ResourceManager? = mResourceManager
 
     private fun updatePluginInfo(skinPath: String, skinPackageName: String, suffix: String) {
-        PreferenceUtil.putPluginPath(mContext!!, skinPath)
-        PreferenceUtil.putPluginPackName(mContext!!, skinPackageName)
-        PreferenceUtil.putPluginSuffix(mContext!!, suffix)
+        PreferenceUtil.putPluginPath(mContext, skinPath)
+        PreferenceUtil.putPluginPackName(mContext, skinPackageName)
+        PreferenceUtil.putPluginSuffix(mContext, suffix)
         mCurrentSkinPath = skinPath
         mCurrentSkinPackageName = skinPackageName
         mCurrentSkinSuffix = suffix
@@ -232,7 +237,9 @@ class FancySkinManager private constructor() {
     }
 
     private fun notifySkinChanged() {
-        mSkinChangedListeners.forEach(SkinChangedListener::onSkinChanged)
+        mSkinChangedMaps.entries.forEach { action->
+            action.value.onSkinChanged()
+        }
     }
 
     private fun cleanPluginSkin() {
@@ -240,7 +247,7 @@ class FancySkinManager private constructor() {
         mCurrentSkinPackageName = ""
         mCurrentSkinSuffix = ""
         usePlugin = false
-        PreferenceUtil.clearPluginSkin(mContext!!)
+        PreferenceUtil.clearPluginSkin(mContext)
     }
 
 
@@ -248,12 +255,10 @@ class FancySkinManager private constructor() {
     private val APPCOMPAT_COLOR_PRIMARY_DARK_ATTRS = intArrayOf(android.support.v7.appcompat.R.attr.colorPrimaryDark)
     private val APPCOMPAT_COLOR_ACCENT_ATTRS = intArrayOf(android.support.v7.appcompat.R.attr.colorAccent)
 
-    private fun getColorPrimaryDarkResId():Int {
-        return getResId(APPCOMPAT_COLOR_PRIMARY_DARK_ATTRS)
-    }
+    private fun getColorPrimaryDarkResId():Int = getResId(APPCOMPAT_COLOR_PRIMARY_DARK_ATTRS)
     private fun getResId(attrs: IntArray): Int {
-        val a = mContext?.obtainStyledAttributes(attrs)
-        val resId = a?.getResourceId(0, INVALID_ID)
+        val a = mContext.obtainStyledAttributes(attrs)
+        val resId = a?.getResourceId(0, 0)
         a?.recycle()
         return resId?:0
     }
@@ -263,9 +268,9 @@ class FancySkinManager private constructor() {
         val addAssetPath = assetManager.javaClass.getMethod("addAssetPath", String::class.java)
         addAssetPath.invoke(assetManager, prefSkinPath)
 
-        val superRes = mContext?.resources
+        val superRes = mContext.resources
         mResources = Resources(assetManager, superRes?.displayMetrics, superRes?.configuration)
-        mResourceManager = ResourceManager(mContext!!, mResources!!, prefSkinPackageName, suffix)
+        mResourceManager = ResourceManager(mContext, mResources!!, prefSkinPackageName, suffix)
         usePlugin = true
     }
 

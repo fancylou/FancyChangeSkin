@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.LayoutInflater
 import android.view.WindowManager
 import net.muliba.changeskin.appcompat.FancySkinLayoutInflaterFactory
 import net.muliba.changeskin.callback.SkinChangedListener
@@ -14,7 +13,7 @@ import net.muliba.changeskin.callback.SkinChangedListener
  * Created by fancylou on 10/25/17.
  */
 
-
+@Deprecated("不用继承这个Activity， 使用withoutActivity()")
 open class FancySkinActivity : AppCompatActivity(), SkinChangedListener {
 
     private val layoutInflaterFactory: FancySkinLayoutInflaterFactory by lazy { FancySkinLayoutInflaterFactory(this) }
@@ -22,7 +21,7 @@ open class FancySkinActivity : AppCompatActivity(), SkinChangedListener {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), layoutInflaterFactory)
         super.onCreate(savedInstanceState)
         changeStatusColor()
-        FancySkinManager.instance().addSkinChangedListener(this)
+        FancySkinManager.instance().addSkinChangedListener(this, this)
     }
 
 
