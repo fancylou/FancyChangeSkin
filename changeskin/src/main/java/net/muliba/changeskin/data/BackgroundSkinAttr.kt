@@ -22,12 +22,18 @@ class BackgroundSkinAttr(attrName:String = "", originResId: Int = 0, resName: St
         if (isColorId!=0) {
             val color = FancySkinManager.instance().getResourceManager()?.getColorByResId(isColorId) ?: -1
             if (color != -1){
-                view.setBackgroundColor(color)
+                try {
+                    view.setBackgroundColor(color)
+                } catch (e: Exception) {
+                }
             }
         }else {
             val drawable = FancySkinManager.instance().getResourceManager()?.getDrawable(originResId, resName)
             if (drawable!=null) {
-                view.background = drawable
+                try {
+                    view.background = drawable
+                } catch (e: Exception) {
+                }
             }
         }
         view.setPadding(left, top, right, bottom)

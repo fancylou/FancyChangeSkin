@@ -14,7 +14,10 @@ class TextColorSkinAttr(attrName:String = "", originResId: Int = 0, resName: Str
         FancySkinManager.instance().getResourceManager()?.let { manager->
             val color = manager.getColor(originResId, resName)
             if (color != -1) {
-                (view as TextView).setTextColor(color)
+                try {
+                    (view as TextView).setTextColor(color)
+                } catch (e: Exception) {
+                }
             }
         }
     }

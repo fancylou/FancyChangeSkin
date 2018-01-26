@@ -14,7 +14,10 @@ class SrcSkinAttr(attrName:String = "", originResId: Int = 0, resName: String = 
         FancySkinManager.instance().getResourceManager()?.let { manager ->
             val drawable = manager.getDrawable(originResId, resName)
             if(drawable!=null) {
-                (view as ImageView).setImageDrawable(drawable)
+                try {
+                    (view as ImageView).setImageDrawable(drawable)
+                } catch (e: Exception) {
+                }
             }
         }
     }

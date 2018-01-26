@@ -27,7 +27,6 @@ class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInfl
 
 
     override fun onCreateView(parent: View?, name: String, context: Context?, attrs: AttributeSet?): View? {
-
         var view: View? = null
         val skinAttrList = filterSkinAttr(attrs, context)
         if (skinAttrList.isEmpty()) {
@@ -48,7 +47,7 @@ class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInfl
             skinViewsMap.put(view!!, skinView)
             skinView.apply()
         }
-        if (view == null) {
+        if (view == null ) {
             Log.i("oncreateView", "create view is null")
         }
         return view

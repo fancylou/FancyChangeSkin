@@ -7,6 +7,7 @@ import android.content.res.AssetManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.ExploreByTouchHelper.INVALID_ID
 import android.text.TextUtils
 import net.muliba.changeskin.callback.DefaultPluginSkinChangingListener
 import net.muliba.changeskin.callback.PluginSkinChangingListener
@@ -75,7 +76,6 @@ class FancySkinManager private constructor() {
         val prefSkinPath = PreferenceUtil.getPluginPath(mContext)
         val prefSkinPackageName = PreferenceUtil.getPluginPackName(mContext)
         mCurrentSkinSuffix = PreferenceUtil.getPluginSuffix(mContext)
-
 
         //默认本地资源
         mResourceManager = ResourceManager(mContext, mContext.resources!!, mContext.packageName!!, mCurrentSkinSuffix)
@@ -237,7 +237,7 @@ class FancySkinManager private constructor() {
     }
 
     private fun notifySkinChanged() {
-        mSkinChangedMaps.entries.forEach { action->
+        mSkinChangedMaps.entries.forEach{ action ->
             action.value.onSkinChanged()
         }
     }
@@ -258,11 +258,17 @@ class FancySkinManager private constructor() {
     private fun getColorPrimaryDarkResId():Int = getResId(APPCOMPAT_COLOR_PRIMARY_DARK_ATTRS)
     private fun getResId(attrs: IntArray): Int {
         val a = mContext.obtainStyledAttributes(attrs)
-        val resId = a?.getResourceId(0, 0)
+        val resId = a?.getResourceId(0, INVALID_ID)
         a?.recycle()
         return resId?:0
     }
 
+    /**
+     * 加载皮肤包
+     * @param prefSkinPath 皮肤包存放路径
+     * @param prefSkinPackageName 皮肤包的packageName
+     * @param suffix 皮肤包内的资源是否需要后后缀
+     */
     private fun loadSkinPlugin(prefSkinPath: String, prefSkinPackageName: String, suffix: String) {
         val assetManager = AssetManager::class.java.newInstance()
         val addAssetPath = assetManager.javaClass.getMethod("addAssetPath", String::class.java)
