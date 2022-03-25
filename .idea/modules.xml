@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FancyChangeSkin.iml" filepath="$PROJECT_DIR$/FancyChangeSkin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/changeskin/changeskin.iml" filepath="$PROJECT_DIR$/changeskin/changeskin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FancyChangeSkin.iml" filepath="$PROJECT_DIR$/.idea/modules/FancyChangeSkin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/FancyChangeSkin.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/FancyChangeSkin.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/changeskin/FancyChangeSkin.changeskin.iml" filepath="$PROJECT_DIR$/.idea/modules/changeskin/FancyChangeSkin.changeskin.iml" />
     </modules>
   </component>
 </project>
