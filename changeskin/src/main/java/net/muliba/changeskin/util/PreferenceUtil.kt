@@ -26,21 +26,21 @@ object PreferenceUtil {
             putString(FancySkin.PLUGIN_PATH_KEY, path)
         }
     }
-    fun getPluginPath(context: Context): String = pref(context).getString(FancySkin.PLUGIN_PATH_KEY, "")
+    fun getPluginPath(context: Context): String = pref(context).getString(FancySkin.PLUGIN_PATH_KEY, "") ?: ""
 
     fun putPluginPackName(context: Context, pkg:String) {
         pref(context).edit{
             putString(FancySkin.PLUGIN_PACKAGE_NAME_KEY, pkg)
         }
     }
-    fun getPluginPackName(context: Context) : String = pref(context).getString(FancySkin.PLUGIN_PACKAGE_NAME_KEY, "")
+    fun getPluginPackName(context: Context) : String = pref(context).getString(FancySkin.PLUGIN_PACKAGE_NAME_KEY, "") ?: ""
 
     fun putPluginSuffix(context: Context, suffix:String) {
         pref(context).edit {
             putString(FancySkin.PLUGIN_SUFFIX_KEY, suffix)
         }
     }
-    fun getPluginSuffix(context: Context):String = pref(context).getString(FancySkin.PLUGIN_SUFFIX_KEY, "")
+    fun getPluginSuffix(context: Context):String = pref(context).getString(FancySkin.PLUGIN_SUFFIX_KEY, "") ?: ""
 }
 
 /**

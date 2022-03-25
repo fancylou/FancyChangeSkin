@@ -1,13 +1,13 @@
 package net.muliba.changeskin.appcompat
 
 import android.content.Context
-import android.support.v4.view.LayoutInflaterFactory
-import android.support.v7.app.AppCompatActivity
 import android.util.ArrayMap
 import android.util.AttributeSet
 import android.util.Log
 import android.view.InflateException
+import android.view.LayoutInflater
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import net.muliba.changeskin.FancySkinManager
 import net.muliba.changeskin.data.BaseSkinAttr
 import net.muliba.changeskin.data.SkinView
@@ -20,22 +20,23 @@ import java.lang.reflect.Constructor
  */
 
 
-class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInflaterFactory {
+class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInflater.Factory2 {
 
 
     private val skinViewsMap = HashMap<View, SkinView>()
 
-
-    override fun onCreateView(parent: View?, name: String, context: Context?, attrs: AttributeSet?): View? {
+    override fun onCreateView(
+        parent: View?,
+        name: String,
+        context: Context,
+        attrs: AttributeSet
+    ): View? {
         var view: View? = null
         val skinAttrList = filterSkinAttr(attrs, context)
         if (skinAttrList.isEmpty()) {
             return null
         }
 
-        if (context == null || attrs == null) {
-            return null
-        }
         if (mContext is AppCompatActivity) {
             view = mContext.delegate.createView(parent, name, context, attrs)
         }
@@ -43,8 +44,8 @@ class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInfl
             view = createViewFromTag(context, name, attrs)
         }
         if (view != null) {
-            val skinView = SkinView(view!!, skinAttrList)
-            skinViewsMap.put(view!!, skinView)
+            val skinView = SkinView(view, skinAttrList)
+            skinViewsMap[view] = skinView
             skinView.apply()
         }
         if (view == null ) {
@@ -52,6 +53,28 @@ class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInfl
         }
         return view
     }
+
+    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
+        val skinAttrList = filterSkinAttr(attrs, context)
+        if (skinAttrList.isEmpty()) {
+            return null
+        }
+        var view = createViewFromTag(context, name, attrs)
+
+        if (view != null) {
+            val skinView = SkinView(view, skinAttrList)
+            skinViewsMap[view] = skinView
+            skinView.apply()
+        }
+        if (view == null ) {
+            Log.i("oncreateView", "create view is null")
+        }
+        return view
+    }
+//
+//    override fun onCreateView(parent: View?, name: String, context: Context?, attrs: AttributeSet?): View? {
+//
+//    }
 
     fun applySkin() {
         skinViewsMap.entries.forEach { entry ->
@@ -74,7 +97,7 @@ class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInfl
             viewName = attrs?.getAttributeValue(null, "class") ?: ""
         }
         try {
-            if (viewName?.indexOf(".") == -1) {
+            if (viewName.indexOf(".") == -1) {
                 val viewWidget = createView(context, attrs, viewName, "android.widget.")
                 if (viewWidget != null) {
                     return viewWidget
@@ -112,10 +135,10 @@ class FancySkinLayoutInflaterFactory(private val mContext: Context) : LayoutInfl
                         if (prefix != null) prefix + name else name).asSubclass(View::class.java)
 
                 constructor = clazz.getConstructor(Context::class.java, AttributeSet::class.java)
-                sConstructorMap.put(name, constructor)
+                sConstructorMap[name] = constructor
             }
             constructor!!.isAccessible = true
-            return constructor!!.newInstance(context, attrs)
+            return constructor.newInstance(context, attrs)
         } catch (e: Exception) {
             // We do not want to catch these, lets return null and let the actual LayoutInflater
             // try

@@ -1,6 +1,7 @@
-package net.muliba.changeskin
+package net.muliba.demo
 
 import android.app.Application
+import net.muliba.changeskin.FancySkinManager
 
 /**
  * Created by fancylou on 10/25/17.

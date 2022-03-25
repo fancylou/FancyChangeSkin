@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.ExploreByTouchHelper.INVALID_ID
+import androidx.core.content.ContextCompat
+import androidx.customview.widget.ExploreByTouchHelper.INVALID_ID
 import android.text.TextUtils
 import net.muliba.changeskin.callback.DefaultPluginSkinChangingListener
 import net.muliba.changeskin.callback.PluginSkinChangingListener
@@ -251,16 +251,16 @@ class FancySkinManager private constructor() {
     }
 
 
-    private val APPCOMPAT_COLOR_PRIMARY_ATTRS = intArrayOf(android.support.v7.appcompat.R.attr.colorPrimary)
-    private val APPCOMPAT_COLOR_PRIMARY_DARK_ATTRS = intArrayOf(android.support.v7.appcompat.R.attr.colorPrimaryDark)
-    private val APPCOMPAT_COLOR_ACCENT_ATTRS = intArrayOf(android.support.v7.appcompat.R.attr.colorAccent)
+    private val APPCOMPAT_COLOR_PRIMARY_ATTRS = intArrayOf(R.attr.colorPrimary)
+    private val APPCOMPAT_COLOR_PRIMARY_DARK_ATTRS = intArrayOf(R.attr.colorPrimaryDark)
+    private val APPCOMPAT_COLOR_ACCENT_ATTRS = intArrayOf(R.attr.colorAccent)
 
     private fun getColorPrimaryDarkResId():Int = getResId(APPCOMPAT_COLOR_PRIMARY_DARK_ATTRS)
     private fun getResId(attrs: IntArray): Int {
         val a = mContext.obtainStyledAttributes(attrs)
-        val resId = a?.getResourceId(0, INVALID_ID)
-        a?.recycle()
-        return resId?:0
+        val resId = a.getResourceId(0, INVALID_ID)
+        a.recycle()
+        return resId
     }
 
     /**

@@ -5,11 +5,12 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.view.LayoutInflaterCompat
+import androidx.core.view.LayoutInflaterCompat
 import android.view.LayoutInflater
 import android.view.WindowManager
 import net.muliba.changeskin.appcompat.FancySkinLayoutInflaterFactory
 import net.muliba.changeskin.callback.SkinChangedListener
+import java.lang.Exception
 import java.util.*
 
 
@@ -39,55 +40,75 @@ class FancySkinActivityLifeCycle : Application.ActivityLifecycleCallbacks {
     }
 
 
-    override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
-        if (activity !=null ) {
-            installLayoutFactory(activity)
-            changeStatusColor(activity)
-            FancySkinManager.instance().addSkinChangedListener(activity, object : SkinChangedListener{
-                override fun onSkinChanged() {
-                    getSkinLayoutInflaterFactory(activity).applySkin()
-                    changeStatusColor(activity)
-                }
-            })
-        }
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        installLayoutFactory(activity)
+        changeStatusColor(activity)
+        FancySkinManager.instance().addSkinChangedListener(activity, object : SkinChangedListener{
+            override fun onSkinChanged() {
+                getSkinLayoutInflaterFactory(activity).applySkin()
+                changeStatusColor(activity)
+            }
+        })
 
     }
-    override fun onActivityStarted(activity: Activity?) {
+    override fun onActivityStarted(activity: Activity) {
 
     }
-    override fun onActivityResumed(activity: Activity?) {
+    override fun onActivityResumed(activity: Activity) {
 
     }
-    override fun onActivityPaused(activity: Activity?) {
+    override fun onActivityPaused(activity: Activity) {
 
     }
-    override fun onActivityStopped(activity: Activity?) {
+    override fun onActivityStopped(activity: Activity) {
 
     }
-    override fun onActivitySaveInstanceState(activity: Activity?, bundle: Bundle?) {
+    override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {
 
     }
-    override fun onActivityDestroyed(activity: Activity?) {
-        if (activity!=null) {
-            getSkinLayoutInflaterFactory(activity).clean()
-            FancySkinManager.instance().removeSkinChangedListener(activity)
-        }
+    override fun onActivityDestroyed(activity: Activity) {
+        getSkinLayoutInflaterFactory(activity).clean()
+        FancySkinManager.instance().removeSkinChangedListener(activity)
     }
 
     private fun installLayoutFactory(context: Context) {
         val layoutInflater = LayoutInflater.from(context)
-        try {
-            val field = LayoutInflater::class.java.getDeclaredField("mFactorySet")
-            field.isAccessible = true
-            field.setBoolean(layoutInflater, false)
-            LayoutInflaterCompat.setFactory(layoutInflater, getSkinLayoutInflaterFactory(context))
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
+
+
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            //反射
+            try {
+                val field = LayoutInflater::class.java.getDeclaredField("mFactorySet")
+                field.isAccessible = true
+                field.setBoolean(layoutInflater, false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            LayoutInflaterCompat.setFactory2(layoutInflater, getSkinLayoutInflaterFactory(context))
+        } else {
+            try {
+                val field = LayoutInflater::class.java.getDeclaredField("mFactory2")
+                field.isAccessible = true
+                field.set(layoutInflater, getSkinLayoutInflaterFactory(context))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+//
+//        try {
+//            val field = LayoutInflater::class.java.getDeclaredField("mFactorySet")
+//            field.isAccessible = true
+//            field.setBoolean(layoutInflater, false)
+//            LayoutInflaterCompat.setFactory2(layoutInflater, getSkinLayoutInflaterFactory(context))
+//        } catch (e: NoSuchFieldException) {
+//            e.printStackTrace()
+//        } catch (e: IllegalArgumentException) {
+//            e.printStackTrace()
+//        } catch (e: IllegalAccessException) {
+//            e.printStackTrace()
+//        }
 
     }
 
@@ -96,7 +117,7 @@ class FancySkinActivityLifeCycle : Application.ActivityLifecycleCallbacks {
             return inflaterFactoryMap[context]!!
         }
         val layoutInflater = FancySkinLayoutInflaterFactory(context)
-        inflaterFactoryMap.put(context, layoutInflater)
+        inflaterFactoryMap[context] = layoutInflater
         return layoutInflater
     }
 

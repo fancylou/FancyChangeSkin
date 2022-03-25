@@ -2,8 +2,8 @@ package net.muliba.changeskin
 
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.view.LayoutInflaterCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.core.view.LayoutInflaterCompat
+import androidx.appcompat.app.AppCompatActivity
 import android.view.WindowManager
 import net.muliba.changeskin.appcompat.FancySkinLayoutInflaterFactory
 import net.muliba.changeskin.callback.SkinChangedListener
@@ -18,7 +18,7 @@ open class FancySkinActivity : AppCompatActivity(), SkinChangedListener {
 
     private val layoutInflaterFactory: FancySkinLayoutInflaterFactory by lazy { FancySkinLayoutInflaterFactory(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), layoutInflaterFactory)
+        LayoutInflaterCompat.setFactory2(layoutInflater, layoutInflaterFactory)
         super.onCreate(savedInstanceState)
         changeStatusColor()
         FancySkinManager.instance().addSkinChangedListener(this, this)

@@ -6,10 +6,10 @@
         app:showAsAction="never"
         android:orderInCategory="90"
         android:title="内部换肤RED"/>
-    <item android:id="@+id/menu_out"
-        app:showAsAction="never"
-        android:orderInCategory="90"
-        android:title="外部换肤"/>
+<!--    <item android:id="@+id/menu_out"-->
+<!--        app:showAsAction="never"-->
+<!--        android:orderInCategory="90"-->
+<!--        android:title="外部换肤"/>-->
     <item android:id="@+id/menu_clear"
         app:showAsAction="never"
         android:orderInCategory="90"

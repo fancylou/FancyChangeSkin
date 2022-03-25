@@ -7,7 +7,7 @@ import android.view.View
  * Copyright © 2017 O2. All rights reserved.
  */
 
-open abstract class BaseSkinAttr(var attrName:String, var originResId: Int, var resName: String) {
+abstract class BaseSkinAttr(var attrName:String, var originResId: Int, var resName: String) {
 
     abstract fun apply(view: View)
     abstract fun copy(attrName:String, originResId: Int, resName: String): BaseSkinAttr

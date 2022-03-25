@@ -1,15 +1,12 @@
-package net.muliba.changeskin
+package net.muliba.demo
 
 import android.os.Bundle
-import android.os.Environment
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
-import net.muliba.changeskin.callback.PluginSkinChangingListener
-import java.io.File
+import net.muliba.changeskin.FancySkinManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         id_listview.adapter = object : ArrayAdapter<String>(this, -1, mDatas) {
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 var itemView = convertView
                 if (itemView == null) {
                     itemView = LayoutInflater.from(this@MainActivity).inflate(R.layout.item_list, parent, false)
@@ -44,30 +41,30 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menu_inner_red -> {
                 FancySkinManager.instance().changeSkinInner("red")
             }
             R.id.menu_clear -> {
                 FancySkinManager.instance().resetDefaultSkin()
             }
-            R.id.menu_out -> {
-                val filePath = Environment.getExternalStorageDirectory().absolutePath + File.separator + "app-release.apk"
-                FancySkinManager.instance().changeSkin(skinPath = filePath, skinPackageName = "net.muliba.pluginskinpurple", callback = object : PluginSkinChangingListener {
-                    override fun onStart() {
-                        Log.e("MainActivity", "onStart.............")
-                    }
-
-                    override fun onError(e: Exception) {
-                        Log.e("MainActivity", "onError.............", e)
-                    }
-
-                    override fun onCompleted() {
-                        Log.e("MainActivity", "onCompleted.............")
-                    }
-                })
-            }
+//            R.id.menu_out -> {
+//                val filePath = Environment.getExternalStorageDirectory().absolutePath + File.separator + "app-release.apk"
+//                FancySkinManager.instance().changeSkin(skinPath = filePath, skinPackageName = "net.muliba.pluginskinpurple", callback = object : PluginSkinChangingListener {
+//                    override fun onStart() {
+//                        Log.e("MainActivity", "onStart.............")
+//                    }
+//
+//                    override fun onError(e: Exception) {
+//                        Log.e("MainActivity", "onError.............", e)
+//                    }
+//
+//                    override fun onCompleted() {
+//                        Log.e("MainActivity", "onCompleted.............")
+//                    }
+//                })
+//            }
             else -> {
             }
         }
